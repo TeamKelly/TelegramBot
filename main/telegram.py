@@ -69,12 +69,19 @@ def echo_all(updates):
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
+
+            for emotion in emotions.keys():
+                if text == get_emotion_query(emotion):
+                    msg = "Oh, you are {}!".format(emotion)
+                    send_message(msg, chat)
+                    return
+
             if text.lower() == "hi" or "hi " in text.lower():
                 username = update["message"]["from"]["first_name"]
                 msg = "Hi, {}. How are you?".format(username)
                 keyboard = build_keyboard()
                 send_message(msg, chat, keyboard)
-            else :
+            else:
                 msg = update["message"]["text"]
                 send_message(msg, chat)
         except Exception as e:
