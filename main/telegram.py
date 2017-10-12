@@ -20,9 +20,10 @@ def get_json_from_url(url):
     return js
 
 def get_updates(offset=None):
-    url = URL + "getUpdates"
+    timeout = 100 # timeout for long polling connection
+    url = URL + "getUpdates?timeout={}".format(timeout)
     if offset:
-        url += "?offset={}".format(offset)
+        url += "&offset={}".format(offset)
     js = get_json_from_url(url)
     return js
 
@@ -56,10 +57,11 @@ def main():
     last_update_id = None
     while True:
         updates = get_updates(last_update_id)
+        print updates
         if len(updates["result"]) > 0:
             last_update_id = get_last_update_id(updates) + 1
             echo_all(updates)
-        time.sleep(0.5)
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
