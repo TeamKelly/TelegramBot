@@ -3,28 +3,16 @@ import json
 import requests
 import time
 import urllib
+import codecs
+import emotion_groups
 
 with open('config.json', 'r') as f:
     config = json.load(f)
 
 TOKEN = config['TELEGRAM']['TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-
-# emotions and corressponding emojis
-emoji = {
-    "default": u'\U0001F600',
-    "smile": u'\U0001F601',
-    "sad": u'\U0001F62d',
-    "love": u'\U0001F60d'
-}
-emotions = {
-    "default": "neutral",
-    "smile": "pleasant",
-    "sad": "sad",
-    "love": "love"
-}
-# keybaord layout setting
-emotion_layout = [["default", "smile"],["sad", "love"]]
+emotion_to_emoji = {}
+emotion_to_value = {}
 
 def get_url(url):
     response = requests.get(url)
@@ -70,9 +58,9 @@ def echo_all(updates):
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
 
-            for emotion in emotions.keys():
+            for emotion in emotion_to_emoji.keys():
                 if text == get_emotion_query(emotion):
-                    msg = "Oh, you are {}!".format(emotion)
+                    msg = "Oh, you are {}! ".format(emotion)
                     send_message(msg, chat)
                     return
 
@@ -88,17 +76,33 @@ def echo_all(updates):
             print(e)
 
 def get_emotion_query(emotion):
-    return "{} ".format(emotions[emotion]) + emoji[emotion]
+    return emotion + " " + emotion_to_emoji[emotion]
 
 def build_keyboard():
     keyboard = []
+    emotion_layout = [["excited", "satisfied", "joyful", "love"],
+                      ["morose", "crying", "gloomy", "lonely"],
+                      ["depressed", "disappointed", "scared", "pouting"]]
     for row in emotion_layout:
         keyboard.append(map(get_emotion_query, row))
+        print row
+        print (map(get_emotion_query, row))
     reply_markup = {"keyboard":keyboard, "resize_keyboard": True, "one_time_keyboard": True}
     return json.dumps(reply_markup)
 
+def build_emotions():
+    groups = emotion_groups.getEmotions()
+    value = 1
+    for group in groups:
+        emotions = groups[group]
+        for emotion in emotions:
+            emotion_to_emoji[emotion] = emotions[emotion]
+            emotion_to_value[emotion] = value
+        value += 1
+
 def main():
     last_update_id = None
+    build_emotions()
     while True:
         updates = get_updates(last_update_id)
         print updates

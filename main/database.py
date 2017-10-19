@@ -1,5 +1,6 @@
 import json
 import random
+import datetime
 from firebase import firebase
 
 with open('config.json', 'r') as f:
@@ -26,7 +27,7 @@ def add_new_user(username):
 def get_user(username):
     url = '/users/' + config['DATABASE'][username]
     result = firebase.get(url, None)
-    print result
+    return result
 
 def get_url(username):
     return '/users/' + config['DATABASE'][username]
@@ -36,7 +37,7 @@ def most_common(lst):
 
 def get_date_with_random_emotions(month, date):
     emotions = []
-    for i in range(24):
+    for i in range(6):
         emotions.append(random.randint(1,6))
     return {
         'month':month,
@@ -59,17 +60,28 @@ def update_mode(username, mode):
 
 def update_dates(username, dates=None):
     if dates is None:
-        dates = get_dates_with_random_emotions(10, 13)
+        today = datetime.datetime.today()
+        dates = get_dates_with_random_emotions(today.month, today.day)
     url = get_url(username)
     result = firebase.put(url, 'dates', dates)
     print "update_dates"
     print result
+
+def extract_today(dates):
+    today = datetime.datetime.today()
+    for date in dates:
+        if date['date'] == today.day:
+            return date
+    return None
 
 def main():
     #init_colors()
     #update_mode(username, 1)
     username = 'yeongjin'
     update_dates(username)
+    user = get_user(username)
+    today = extract_today(user['dates'])
+    print today
 
 if __name__ == '__main__':
     main()
