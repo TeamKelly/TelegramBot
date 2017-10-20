@@ -127,6 +127,7 @@ def update_emotion(username, emotion, color):
     idx = get_current_idx()
     today['colors'][idx] = color
     today['emotions'][idx]['emotion'] = emotion
+    today['emotions'][idx]['reason'] = ""
     for i in range(idx+1,6):
         today['colors'][i] = 0
     update_dates(username, dates)

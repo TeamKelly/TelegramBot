@@ -130,10 +130,8 @@ def echo_all(updates):
                         send_message(msg, chat)
                         return
                     elif len(emots) == 1:
-                        print("test1")
                         msg = "She is {}. ".format(emots[0]) + emotion_to_emoji[emots[0]]
                     else:
-                        print("test")
                         msg = "She was {}, but {} now. ".format(emots[-2], emots[-1]) + emotion_to_emoji[emots[-1]]
                     send_message(msg, chat)
                     check_calendar(username, chat)
