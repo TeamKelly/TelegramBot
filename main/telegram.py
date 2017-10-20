@@ -12,6 +12,7 @@ with open('config.json', 'r') as f:
 
 TOKEN = config['TELEGRAM']['TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
+status = 0
 emotion_to_emoji = {}
 emotion_to_group = {}
 group_to_number = {
@@ -68,21 +69,48 @@ def send_message(text, chat_id, reply_markup=None):
         url += "&reply_markup={}".format(reply_markup)
     get_url(url)
 
+def check_calendar(username, chat):
+    global status
+    database.update_mode(username, 0)
+    msg = "Please check your calendar. Do you want to change the calendar to yours?"
+    send_message(msg, chat)
+    status = 1
+
+def check_yes(text):
+    yes_words = ["yes", "sure", "okay", "ok", "of course"]
+    for word in yes_words:
+        if word in text:
+            return True
+    return False
+
 def echo_all(updates):
+    global status
     for update in updates["result"]:
+        check_mode_change = (status == 1)
+        status = 0
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
             username = update["message"]["from"]["first_name"]
-            if "how is she" in text.lower():
+            text = text.lower()
+
+            if check_mode_change and check_yes(text):
+                database.update_mode(username, 1)
+                msg = "Okay, I changed."
+                send_message(msg, chat)
+                return
+
+            if "how is she" in text:
                 username2 = database.get_username2()
-                if "now" in text.lower():
+                if "now" in text:
                     emotion = database.get_current_emotion(username2)
                     if emotion == "":
                         msg = "I don't know.. She didn't tell me how she is today."
+                        send_message(msg, chat)
                     else:
                         msg = "She is {}.".format(emotion)
-                    send_message(msg, chat)
+                        send_message(msg, chat)
+                        check_calendar(username, chat)
                 else:
                     emotions = database.get_today_emotions(username2)
                     emots = []
@@ -94,29 +122,31 @@ def echo_all(updates):
                             emots.append(emotion)
                     if len(emots) == 0:
                         msg = "I don't know.. She didn't tell me how she is today."
+                        send_message(msg, chat)
+                        return
                     elif len(emots) == 1:
                         msg = "She is {}.".format(emots[0])
                     else:
                         msg = "She was {}, but {} now.".format(emots[-2], emots[-1])
                     send_message(msg, chat)
-                    print emots
+                    check_calendar(username, chat)
                 return
 
-            if "because" in text.lower():
+            if "because" in text:
                 database.update_reason(username, text)
                 msg = "Oh.. sorry to hear that. Cheer up, {}!".format(username)
                 send_message(msg, chat)
                 return
 
             for emotion in emotion_to_emoji.keys():
-                if emotion in text.lower():
+                if emotion in text:
                     group = emotion_to_group[emotion]
                     database.update_emotion(username, emotion, group)
                     msg = group_to_msg[group].format(emotion)
                     send_message(msg, chat)
                     return
 
-            if text.lower() == "hi" or "hi " in text.lower() or "kelly" in text.lower():
+            if text == "hi" or "hi " in text or "kelly" in text:
                 msg = "Hi, {}. How are you?".format(username)
                 keyboard = build_keyboard()
                 send_message(msg, chat, keyboard)
@@ -157,7 +187,7 @@ def main():
             try:
                 echo_all(updates)
                 last_update_id = get_last_update_id(updates) + 1
-            except Execetion as e:
+            except Exception as e:
                 print(e)
         time.sleep(1)
 

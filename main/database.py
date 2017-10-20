@@ -37,7 +37,6 @@ def get_username2():
 def get_url(username):
     return '/users/' + config['DATABASE'][username]
 
-
 def get_today_emotions(username):
     dates = get_dates(username)
     today = extract_today(dates)
@@ -77,8 +76,6 @@ def get_dates_with_random_colors(month, num_of_dates):
 def update_mode(username, mode):
     url = get_url(username)
     result = firebase.put(url, 'mode', mode)
-    print "update_mode"
-    print result
 
 def update_dates(username, dates=None):
     if dates is None:
