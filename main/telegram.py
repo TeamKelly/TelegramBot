@@ -37,6 +37,14 @@ group_to_msg = {
     5:"Oh.. What makes you {}?",
     6:"You are {} lol!"
 }
+group_to_response = {
+    1:"Great :)",
+    2:"Oh.. sorry to hear that. Cheer up, {}!",
+    3:"Oh.. sorry to hear that. Cheer up, {}!",
+    4:"Oh.. sorry to hear that. Cheer up, {}!",
+    5:"Oh.. sorry to hear that. Cheer up, {}!",
+    6:"Wonderful!"
+}
 def get_url(url):
     response = requests.get(url)
     content = response.content.decode("utf8")
@@ -80,7 +88,7 @@ def check_calendar(username, chat):
     database.update_mode(username, 0)
     msg = "Please check your calendar. Do you want to change the calendar to yours?"
     send_message(msg, chat)
-    status[username] = 1
+    status[username] = 10
 
 def check_yes(text):
     yes_words = ["yes", "sure", "okay", "ok", "of course"]
@@ -95,8 +103,9 @@ def echo_all(updates):
         text = update["message"]["text"]
         chat = update["message"]["chat"]["id"]
         username = update["message"]["from"]["first_name"]
-        check_mode_change = (status[username] == 1)
-        check_reason = (status[username] == 2)
+        check_mode_change = (status[username] == 10)
+        check_reason = (status[username] >= 1 and status[username] <= 6)
+       	prev_status  = status[username]
         status[username] = 0
         try:
             username2 = database.get_username2()
@@ -144,7 +153,7 @@ def echo_all(updates):
             # when he/she explains the reason of the feeling
             if check_reason and "because" in text:
                 database.update_reason(username, text)
-                msg = "Oh.. sorry to hear that. Cheer up, {}!".format(username)
+                msg = group_to_response[prev_status].format(username)
                 send_message(msg, chat)
                 return
 
@@ -161,7 +170,7 @@ def echo_all(updates):
                     database.update_emotion(username, emotion, group)
                     msg = group_to_msg[group].format(emotion) + emotion_to_emoji[emotion]
                     send_message(msg, chat)
-                    status = 2
+                    status[username] = emotion_to_group[emotion]
                     return
 
             if text == "hi" or "hi " in text or "kelly" in text:
