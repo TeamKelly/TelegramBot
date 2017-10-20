@@ -29,8 +29,24 @@ def get_user(username):
     result = firebase.get(url, None)
     return result
 
+def get_username2():
+    url = '/demo/user2'
+    result = firebase.get(url, None)
+    return result
+
 def get_url(username):
     return '/users/' + config['DATABASE'][username]
+
+
+def get_today_emotions(username):
+    dates = get_dates(username)
+    today = extract_today(dates)
+    return today['emotions']
+
+def get_current_emotion(username):
+    emotions = get_today_emotions(username)
+    idx = get_current_idx()
+    return emotions[idx]['emotion']
 
 def most_common(lst):
     return max(set(lst), key=lst.count)
@@ -82,12 +98,15 @@ def extract_today(dates):
 
 def get_current_idx():
     hour = datetime.datetime.now().hour
-    idx = (hour-8)/2
+    idx = (hour-9)/3
     return idx
 
-def update_emotion(username, emotion, color):
+def get_dates(username):
     user = get_user(username)
-    dates = user['dates']
+    return user['dates']
+
+def update_emotion(username, emotion, color):
+    dates = get_dates(username)
     today = extract_today(dates)
     idx = get_current_idx()
     today['colors'][idx] = color
@@ -97,8 +116,7 @@ def update_emotion(username, emotion, color):
     update_dates(username, dates)
 
 def update_reason(username, reason):
-    user = get_user(username)
-    dates = user['dates']
+    dates = get_dates(username)
     today = extract_today(dates)
     idx = get_current_idx()
     today['emotions'][idx]['reason'] = reason
@@ -109,7 +127,7 @@ def main():
     #update_mode(username, 1)
     username1 = 'Yeongjin'
     username2 = 'sunju'
-    username3 = 'taehee'
+    username3 = 'Taehee'
     update_dates(username1)
     update_dates(username2)
     update_dates(username3)

@@ -74,11 +74,39 @@ def echo_all(updates):
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
             username = update["message"]["from"]["first_name"]
+            if "how is she" in text.lower():
+                username2 = database.get_username2()
+                if "now" in text.lower():
+                    emotion = database.get_current_emotion(username2)
+                    if emotion == "":
+                        msg = "I don't know.. She didn't tell me how she is today."
+                    else:
+                        msg = "She is {}.".format(emotion)
+                    send_message(msg, chat)
+                else:
+                    emotions = database.get_today_emotions(username2)
+                    emots = []
+                    for e in emotions:
+                        emotion = e['emotion']
+                        if emotion == "":
+                            continue
+                        if len(emots) == 0 or emots[-1] != emotion:
+                            emots.append(emotion)
+                    if len(emots) == 0:
+                        msg = "I don't know.. She didn't tell me how she is today."
+                    elif len(emots) == 1:
+                        msg = "She is {}.".format(emots[0])
+                    else:
+                        msg = "She was {}, but {} now.".format(emots[-2], emots[-1])
+                    send_message(msg, chat)
+                    print emots
+                return
 
             if "because" in text.lower():
                 database.update_reason(username, text)
                 msg = "Oh.. sorry to hear that. Cheer up, {}!".format(username)
                 send_message(msg, chat)
+                return
 
             for emotion in emotion_to_emoji.keys():
                 if emotion in text.lower():
@@ -118,7 +146,6 @@ def build_emotions():
         for emotion in emotions:
             emotion_to_emoji[emotion] = emotions[emotion]
             emotion_to_group[emotion] = group_to_number[group]
-    print emotion_to_group
 
 def main():
     last_update_id = None

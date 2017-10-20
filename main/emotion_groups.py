@@ -10,6 +10,7 @@ def getEmotions():
         },
         "SADNESS":{
             "morose": u'\U0001F622',
+            "sad": u'\U0001F622',
             "crying": u'\U0001F62D',
             "in despair": u'\U0001F61E',
             "gloomy": u'\U0001F912',
