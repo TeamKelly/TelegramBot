@@ -92,12 +92,12 @@ def check_yes(text):
 def echo_all(updates):
     global status
     for update in updates["result"]:
-    	text = update["message"]["text"]
-    	chat = update["message"]["chat"]["id"]
-    	username = update["message"]["from"]["first_name"]
-    	check_mode_change = (status[username] == 1)
-    	check_reason = (status[username] == 2)
-    	status[username] = 0
+        text = update["message"]["text"]
+        chat = update["message"]["chat"]["id"]
+        username = update["message"]["from"]["first_name"]
+        check_mode_change = (status[username] == 1)
+        check_reason = (status[username] == 2)
+        status[username] = 0
         try:
             username2 = database.get_username2()
             text = text.lower()
