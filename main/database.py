@@ -17,12 +17,10 @@ def init_colors():
         5:{'r':0, 'g':0, 'b':255},
         6:{'r':127, 'g':0, 'b':127}}
     result = firebase.post('/colors', colors)
-    print result
 
 def add_new_user(username):
     new_user = {'name':username, 'mode':1}
     result = firebase.post('/users', new_user)
-    print result
 
 def get_user(username):
     url = '/users/' + config['DATABASE'][username]

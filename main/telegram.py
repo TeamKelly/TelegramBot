@@ -196,7 +196,7 @@ def main():
     build_emotions()
     while True:
         updates = get_updates(last_update_id)
-        print updates
+        # print(updates)
         if len(updates["result"]) > 0:
             try:
                 echo_all(updates)
