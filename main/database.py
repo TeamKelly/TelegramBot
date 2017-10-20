@@ -130,6 +130,7 @@ def update_emotion(username, emotion, color):
     today['emotions'][idx]['reason'] = ""
     for i in range(idx+1,6):
         today['colors'][i] = 0
+    today['color'] = most_common(today['colors'][0:idx+1])
     update_dates(username, dates)
 
 def update_reason(username, reason):
