@@ -1,6 +1,9 @@
 # Config
 config.json
 
+# Python
+nohup.out
+
 # Environments
 .env
 .venv

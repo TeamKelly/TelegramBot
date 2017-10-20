@@ -82,6 +82,7 @@ def getEmotions():
             "astonished":u'\U0001F623',
             "humiliated":u'\U0001F623',
             "nervous":u'\U0001F623',
+            "embarrassed":u'\U0001F623',
             "ridiculed":u'\U0001F623',
             "disrespected":u'\U0001F623',
             "rejected":u'\U0001F623',
