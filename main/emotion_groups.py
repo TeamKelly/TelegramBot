@@ -45,7 +45,6 @@ def getEmotions():
             "victimized": u'\U0001F622',
             "powerless": u'\U0001F622',
             "vulnerable": u'\U0001F622',
-            "empty": u'\U0001F622',
             "isolated": u'\U0001F622',
             "bored": u'\U0001F622',
             "apathetic": u'\U0001F622',

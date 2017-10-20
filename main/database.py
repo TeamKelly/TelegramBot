@@ -28,7 +28,7 @@ def get_user(username):
     return result
 
 def get_username2():
-    url = '/demo/user2'
+    url = '/demo/user2/name'
     result = firebase.get(url, None)
     return result
 
@@ -73,7 +73,7 @@ def get_dates_with_random_colors(month, num_of_dates):
 
 # change I to He / am to is
 def change_reason(reason):
-    return reason.replace(" I ", " She ").replace(" i ", " she ").replace("I'm","She's").replace("i'm","she's").replace(" am ", " was ").replace("don't", "didn't")
+    return reason.replace(" I ", " She ").replace(" i ", " she ").replace("I'm","She's").replace("i'm","she's").replace(" am ", " was ").replace("don't", "didn't").replace("my","her").replace("me","her").replace("mine","hers")
 
 def get_reason(username, emotion):
     dates = get_dates(username)
@@ -113,8 +113,9 @@ def extract_today(dates):
 
 def get_current_idx():
     hour = datetime.datetime.now().hour
-    idx = (hour-9)/3
-    return idx
+#    idx = (hour-9)/3
+    idx = hour/4
+    return int(idx)
 
 def get_dates(username):
     user = get_user(username)

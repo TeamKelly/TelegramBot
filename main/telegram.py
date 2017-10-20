@@ -26,12 +26,12 @@ group_to_number = {
     "LOVE":6
 }
 group_to_msg = {
-    1:"Oh, you are {}! Happy to hear that :)",
-    2:"Are you {}? why? :'(",
-    3:"Are you {}? why?",
-    4:"Are you {}? why?",
-    5:"Are you {}? why?",
-    6:"Oh, you are {}! I envy you!! XD"
+    1:"Oh, you are {}! Happy to hear that ",
+    2:"I hope to have arms to hug you. Why are you {}?  ",
+    3:"Are you {}? why? ",
+    4:"Are you {}? what's going on?! ",
+    5:"Oh.. What makes you {}?",
+    6:"You are {} lol!"
 }
 def get_url(url):
     response = requests.get(url)
@@ -65,7 +65,7 @@ def get_last_chat_id_and_text(updates):
     return (text, chat_id)
 
 def send_message(text, chat_id, reply_markup=None):
-    text = urllib.pathname2url(text)
+    text = urllib.request.pathname2url(text)
     url = URL + "sendMessage?text={}&chat_id={}&parse_mode=Markdown".format(text, chat_id)
     if reply_markup:
         url += "&reply_markup={}".format(reply_markup)
@@ -113,7 +113,7 @@ def echo_all(updates):
                         msg = "I don't know.. She didn't tell me how she is today."
                         send_message(msg, chat)
                     else:
-                        msg = "She is {}.".format(emotion)
+                        msg = "She is {}. ".format(emotion) + emotion_to_emoji[emotion]
                         send_message(msg, chat)
                         check_calendar(username, chat)
                 else:
@@ -130,9 +130,11 @@ def echo_all(updates):
                         send_message(msg, chat)
                         return
                     elif len(emots) == 1:
-                        msg = "She is {}.".format(emots[0])
+                        print("test1")
+                        msg = "She is {}. ".format(emots[0]) + emotion_to_emoji[emots[0]]
                     else:
-                        msg = "She was {}, but {} now.".format(emots[-2], emots[-1])
+                        print("test")
+                        msg = "She was {}, but {} now. ".format(emots[-2], emots[-1]) + emotion_to_emoji[emots[-1]]
                     send_message(msg, chat)
                     check_calendar(username, chat)
                 return
@@ -155,7 +157,7 @@ def echo_all(updates):
                         return
                     group = emotion_to_group[emotion]
                     database.update_emotion(username, emotion, group)
-                    msg = group_to_msg[group].format(emotion)
+                    msg = group_to_msg[group].format(emotion) + emotion_to_emoji[emotion]
                     send_message(msg, chat)
                     status = 2
                     return
@@ -179,7 +181,7 @@ def build_keyboard():
                       ["morose", "crying", "gloomy", "lonely"],
                       ["depressed", "disappointed", "scared", "pouting"]]
     for row in emotion_layout:
-        keyboard.append(map(get_emotion_query, row))
+        keyboard.append(list(map(get_emotion_query, row)))
     reply_markup = {"keyboard":keyboard, "resize_keyboard": True, "one_time_keyboard": True}
     return json.dumps(reply_markup)
 
