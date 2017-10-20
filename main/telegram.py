@@ -28,7 +28,7 @@ group_to_msg = {
     3:"Are you {}? why?",
     4:"Are you {}? why?",
     5:"Are you {}? why?",
-    6:"Oh, you are {}! I envy you!! :)"
+    6:"Oh, you are {}! I envy you!! XD"
 }
 def get_url(url):
     response = requests.get(url)
@@ -74,6 +74,11 @@ def echo_all(updates):
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
             username = update["message"]["from"]["first_name"]
+
+            if "because" in text.lower():
+                database.update_reason(username, text)
+                msg = "Oh.. sorry to hear that. Cheer up, {}!".format(username)
+                send_message(msg, chat)
 
             for emotion in emotion_to_emoji.keys():
                 if emotion in text.lower():

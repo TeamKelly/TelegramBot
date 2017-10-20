@@ -77,20 +77,31 @@ def extract_today(dates):
     for date in dates:
         if date['date'] == today.day:
             return date
-    return None
+    # if today doesn't exist, create it
+    return get_date_with_random_emotion(10, today.day)
+
+def get_current_idx():
+    hour = datetime.datetime.now().hour
+    idx = (hour-8)/2
+    return idx
 
 def update_emotion(username, emotion, color):
     user = get_user(username)
     dates = user['dates']
     today = extract_today(dates)
-    if today is None:
-        today = get_date_with_random_emotion(10, datetime.datetime.today().day)
-    hour = datetime.datetime.now().hour
-    idx = (hour-8)/2
+    idx = get_current_idx()
     today['colors'][idx] = color
     today['emotions'][idx]['emotion'] = emotion
     for i in range(idx+1,6):
         today['colors'][i] = 0
+    update_dates(username, dates)
+
+def update_reason(username, reason):
+    user = get_user(username)
+    dates = user['dates']
+    today = extract_today(dates)
+    idx = get_current_idx()
+    today['emotions'][idx]['reason'] = reason
     update_dates(username, dates)
 
 def main():
