@@ -12,6 +12,8 @@ with open('config.json', 'r') as f:
 
 TOKEN = config['TELEGRAM']['TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
+# status = 1 when asking for changing
+# status = 2 when asking why he/she feels like that
 status = 0
 emotion_to_emoji = {}
 emotion_to_group = {}
@@ -87,21 +89,24 @@ def echo_all(updates):
     global status
     for update in updates["result"]:
         check_mode_change = (status == 1)
+        check_reason = (status == 2)
         status = 0
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
             username = update["message"]["from"]["first_name"]
+            username2 = database.get_username2()
             text = text.lower()
 
+            # when he want to change back calendar to his
             if check_mode_change and check_yes(text):
                 database.update_mode(username, 1)
                 msg = "Okay, I changed."
                 send_message(msg, chat)
                 return
 
+            # when he wants to check her emotions
             if "how is she" in text:
-                username2 = database.get_username2()
                 if "now" in text:
                     emotion = database.get_current_emotion(username2)
                     if emotion == "":
@@ -132,18 +137,27 @@ def echo_all(updates):
                     check_calendar(username, chat)
                 return
 
-            if "because" in text:
+            # when he/she explains the reason of the feeling
+            if check_reason and "because" in text:
                 database.update_reason(username, text)
                 msg = "Oh.. sorry to hear that. Cheer up, {}!".format(username)
                 send_message(msg, chat)
                 return
 
+            # when he/she talks about his/her emotion
             for emotion in emotion_to_emoji.keys():
                 if emotion in text:
+
+                    # when he asks why she felt like that
+                    if "why" in text and "she" in text:
+                        msg = database.get_reason(username2, emotion)
+                        send_message(msg, chat)
+                        return
                     group = emotion_to_group[emotion]
                     database.update_emotion(username, emotion, group)
                     msg = group_to_msg[group].format(emotion)
                     send_message(msg, chat)
+                    status = 2
                     return
 
             if text == "hi" or "hi " in text or "kelly" in text:

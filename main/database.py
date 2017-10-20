@@ -73,6 +73,24 @@ def get_dates_with_random_colors(month, num_of_dates):
         dates.append(get_date_with_random_colors(month,date))
     return dates
 
+# change I to He / am to is
+def change_reason(reason):
+    return reason
+
+def get_reason(username, emotion):
+    dates = get_dates(username)
+    today = extract_today(dates)
+    has_emotion = False
+    for e in today['emotions']:
+        if emotion == e['emotion']:
+            has_emotion = True
+            if e['reason'] != "":
+                reason = e['reason']
+                return change_reason(reason)
+    if has_emotion:
+        return "I don't know. She doesn't say why she was {}.".format(emotion)
+    return "She wasn't {}.".format(emotion)
+
 def update_mode(username, mode):
     url = get_url(username)
     result = firebase.put(url, 'mode', mode)
@@ -91,7 +109,9 @@ def extract_today(dates):
         if date['date'] == today.day:
             return date
     # if today doesn't exist, create it
-    return get_date_with_random_emotion(10, today.day)
+    today =  get_date_with_random_colors(10, today.day)
+    dates.append(today)
+    return today
 
 def get_current_idx():
     hour = datetime.datetime.now().hour
