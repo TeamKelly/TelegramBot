@@ -14,7 +14,11 @@ TOKEN = config['TELEGRAM']['TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 # status = 1 when asking for changing
 # status = 2 when asking why he/she feels like that
-status = 0
+status = {
+	"Yeongjin":0,
+	"sunju":0,
+	"Taehee":0
+}
 emotion_to_emoji = {}
 emotion_to_group = {}
 group_to_number = {
@@ -76,7 +80,7 @@ def check_calendar(username, chat):
     database.update_mode(username, 0)
     msg = "Please check your calendar. Do you want to change the calendar to yours?"
     send_message(msg, chat)
-    status = 1
+    status[username] = 1
 
 def check_yes(text):
     yes_words = ["yes", "sure", "okay", "ok", "of course"]
@@ -88,13 +92,13 @@ def check_yes(text):
 def echo_all(updates):
     global status
     for update in updates["result"]:
-        check_mode_change = (status == 1)
-        check_reason = (status == 2)
-        status = 0
+    	text = update["message"]["text"]
+    	chat = update["message"]["chat"]["id"]
+    	username = update["message"]["from"]["first_name"]
+    	check_mode_change = (status[username] == 1)
+    	check_reason = (status[username] == 2)
+    	status[username] = 0
         try:
-            text = update["message"]["text"]
-            chat = update["message"]["chat"]["id"]
-            username = update["message"]["from"]["first_name"]
             username2 = database.get_username2()
             text = text.lower()
 
