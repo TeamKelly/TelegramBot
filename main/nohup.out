@@ -1,0 +1,11 @@
+{u'ok': True, u'result': [{u'message': {u'date': 1508491956, u'text': u'hi', u'from': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'is_bot': False, u'id': 419163888, u'language_code': u'ko-KR'}, u'message_id': 448, u'chat': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'type': u'private', u'id': 419163888}}, u'update_id': 516450638}]}
+{u'ok': True, u'result': [{u'message': {u'date': 1508491992, u'text': u'hey', u'from': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'is_bot': False, u'id': 419163888, u'language_code': u'en'}, u'message_id': 450, u'chat': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'type': u'private', u'id': 419163888}}, u'update_id': 516450639}]}
+{u'ok': True, u'result': [{u'message': {u'date': 1508491992, u'text': u'hey', u'from': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'is_bot': False, u'id': 419163888, u'language_code': u'en'}, u'message_id': 451, u'chat': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'type': u'private', u'id': 419163888}}, u'update_id': 516450640}, {u'message': {u'date': 1508491993, u'text': u'hey', u'from': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'is_bot': False, u'id': 419163888, u'language_code': u'en'}, u'message_id': 452, u'chat': {u'first_name': u'Yeongjin', u'last_name': u'Oh', u'type': u'private', u'id': 419163888}}, u'update_id': 516450641}]}
+{u'ok': True, u'result': []}
+{u'error_code': 409, u'ok': False, u'description': u'Conflict: terminated by other long poll or webhook'}
+Traceback (most recent call last):
+  File "telegram.py", line 118, in <module>
+    main()
+  File "telegram.py", line 109, in main
+    if len(updates["result"]) > 0:
+KeyError: 'result'

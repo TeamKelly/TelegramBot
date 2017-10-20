@@ -35,21 +35,27 @@ def get_url(username):
 def most_common(lst):
     return max(set(lst), key=lst.count)
 
-def get_date_with_random_emotions(month, date):
+def get_date_with_random_colors(month, date):
+    colors = []
     emotions = []
     for i in range(6):
-        emotions.append(random.randint(1,6))
+        colors.append(random.randint(1,6))
+        emotions.append({
+            'emotion':"",
+            'reason':""
+        })
     return {
         'month':month,
         'date':date,
         'emotions':emotions,
-        'rep_emotion':most_common(emotions)
+        'colors':colors,
+        'color':most_common(colors)
     }
 
-def get_dates_with_random_emotions(month, num_of_dates):
+def get_dates_with_random_colors(month, num_of_dates):
     dates = []
     for date in range(1,num_of_dates+1):
-        dates.append(get_date_with_random_emotions(month,date))
+        dates.append(get_date_with_random_colors(month,date))
     return dates
 
 def update_mode(username, mode):
@@ -61,11 +67,10 @@ def update_mode(username, mode):
 def update_dates(username, dates=None):
     if dates is None:
         today = datetime.datetime.today()
-        dates = get_dates_with_random_emotions(today.month, today.day)
+        dates = get_dates_with_random_colors(today.month, today.day)
+        update_emotion(username, "", 1)
     url = get_url(username)
     result = firebase.put(url, 'dates', dates)
-    print "update_dates"
-    print result
 
 def extract_today(dates):
     today = datetime.datetime.today()
@@ -74,14 +79,29 @@ def extract_today(dates):
             return date
     return None
 
+def update_emotion(username, emotion, color):
+    user = get_user(username)
+    dates = user['dates']
+    today = extract_today(dates)
+    if today is None:
+        today = get_date_with_random_emotion(10, datetime.datetime.today().day)
+    hour = datetime.datetime.now().hour
+    idx = (hour-8)/2
+    today['colors'][idx] = color
+    today['emotions'][idx]['emotion'] = emotion
+    for i in range(idx+1,6):
+        today['colors'][i] = 0
+    update_dates(username, dates)
+
 def main():
     #init_colors()
     #update_mode(username, 1)
-    username = 'yeongjin'
-    update_dates(username)
-    user = get_user(username)
-    today = extract_today(user['dates'])
-    print today
+    username1 = 'Yeongjin'
+    username2 = 'sunju'
+    username3 = 'taehee'
+    update_dates(username1)
+    update_dates(username2)
+    update_dates(username3)
 
 if __name__ == '__main__':
     main()

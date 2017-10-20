@@ -2,6 +2,7 @@ def getEmotions():
     emotions = {
         "JOY":{
             "delighted": u'\U0001F601',
+            "happy": u'\U0001F601',
             "humorous": u'\U0001F923',
             "excited": u'\U0001F601',
             "satisfied": u'\U0000263A',
@@ -11,9 +12,9 @@ def getEmotions():
             "morose": u'\U0001F622',
             "crying": u'\U0001F62D',
             "in despair": u'\U0001F61E',
-            "gloomy": u'\U00001912',
-            "lonely": u'\U00019636',
-            "depressed": u'\U0001963F'
+            "gloomy": u'\U0001F912',
+            "lonely": u'\U0001F636',
+            "depressed": u'\U0001F63F'
         },
         "DISGUST":{
             "loathing": u'\U0001F62B',

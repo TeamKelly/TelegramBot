@@ -5,6 +5,7 @@ import time
 import urllib
 import codecs
 import emotion_groups
+import database
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -12,8 +13,23 @@ with open('config.json', 'r') as f:
 TOKEN = config['TELEGRAM']['TOKEN']
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 emotion_to_emoji = {}
-emotion_to_value = {}
-
+emotion_to_group = {}
+group_to_number = {
+    "JOY":1,
+    "SADNESS":2,
+    "DISGUST":3,
+    "FEAR":4,
+    "ANGER":5,
+    "LOVE":6
+}
+group_to_msg = {
+    1:"Oh, you are {}! Happy to hear that :)",
+    2:"Are you {}? why? :'(",
+    3:"Are you {}? why?",
+    4:"Are you {}? why?",
+    5:"Are you {}? why?",
+    6:"Oh, you are {}! I envy you!! :)"
+}
 def get_url(url):
     response = requests.get(url)
     content = response.content.decode("utf8")
@@ -57,15 +73,17 @@ def echo_all(updates):
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
+            username = update["message"]["from"]["first_name"]
 
             for emotion in emotion_to_emoji.keys():
-                if text == get_emotion_query(emotion):
-                    msg = "Oh, you are {}! ".format(emotion)
+                if emotion in text.lower():
+                    group = emotion_to_group[emotion]
+                    database.update_emotion(username, emotion, group)
+                    msg = group_to_msg[group].format(emotion)
                     send_message(msg, chat)
                     return
 
-            if text.lower() == "hi" or "hi " in text.lower():
-                username = update["message"]["from"]["first_name"]
+            if text.lower() == "hi" or "hi " in text.lower() or "kelly" in text.lower():
                 msg = "Hi, {}. How are you?".format(username)
                 keyboard = build_keyboard()
                 send_message(msg, chat, keyboard)
@@ -85,20 +103,17 @@ def build_keyboard():
                       ["depressed", "disappointed", "scared", "pouting"]]
     for row in emotion_layout:
         keyboard.append(map(get_emotion_query, row))
-        print row
-        print (map(get_emotion_query, row))
     reply_markup = {"keyboard":keyboard, "resize_keyboard": True, "one_time_keyboard": True}
     return json.dumps(reply_markup)
 
 def build_emotions():
     groups = emotion_groups.getEmotions()
-    value = 1
     for group in groups:
         emotions = groups[group]
         for emotion in emotions:
             emotion_to_emoji[emotion] = emotions[emotion]
-            emotion_to_value[emotion] = value
-        value += 1
+            emotion_to_group[emotion] = group_to_number[group]
+    print emotion_to_group
 
 def main():
     last_update_id = None
