@@ -75,7 +75,7 @@ def get_dates_with_random_colors(month, num_of_dates):
 
 # change I to He / am to is
 def change_reason(reason):
-    return reason
+    return reason.replace(" I ", " She ").replace(" i ", " she ").replace("I'm","She's").replace("i'm","she's").replace(" am ", " was ").replace("don't", "didn't")
 
 def get_reason(username, emotion):
     dates = get_dates(username)
