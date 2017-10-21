@@ -65,6 +65,23 @@ def get_date_with_random_colors(month, date):
         'color':most_common(colors)
     }
 
+def get_default_date(month, date):
+    colors = []
+    emotions = []
+    for i in range(6):
+        colors.append(0)
+        emotions.append({
+            'emotion':"",
+            'reason':""
+        })
+    return {
+        'month':month,
+        'date':date,
+        'emotions':emotions,
+        'colors':colors,
+        'color':most_common(colors)
+    }
+
 def get_dates_with_random_colors(month, num_of_dates):
     dates = []
     for date in range(1,num_of_dates+1):
@@ -132,6 +149,29 @@ def update_emotion(username, emotion, color):
         today['colors'][i] = 0
     today['color'] = most_common(today['colors'][0:idx+1])
     update_dates(username, dates)
+
+def set_date(date, idx, emotion, color):
+    date['colors'][idx] = color
+    date['emotions'][idx]['emotion'] = emotion
+    date['emotions'][idx]['reason'] = ""
+    for i in range(idx+1,6):
+        date['colors'][i] = 0
+    date['color'] = most_common(date['colors'][0:idx+1])
+
+def add_emotion(username, emotion, color):
+    dates = get_dates(username)
+    today = extract_today(dates)
+    for i in range(0, 6):
+        if today['colors'][i] == 0:
+            set_date(date, i, emotion, color)
+            update_dates(username, dates)
+            return
+    date = get_default_date(10, len(dates))
+    set_date(date, 0, emotion, color)
+    update_dates(username, dates)
+
+def reset(username):
+    update_detes(username)
 
 def update_reason(username, reason):
     dates = get_dates(username)

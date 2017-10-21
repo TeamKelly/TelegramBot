@@ -111,6 +111,11 @@ def echo_all(updates):
             username2 = database.get_username2()
             text = text.lower()
 
+            # reset calendar
+            if "reset" == text:
+                database.reset("Taehee")
+                return
+
             # when he want to change back calendar to his
             if check_mode_change and check_yes(text):
                 database.update_mode(username, 1)
@@ -167,7 +172,7 @@ def echo_all(updates):
                         send_message(msg, chat)
                         return
                     group = emotion_to_group[emotion]
-                    database.update_emotion(username, emotion, group)
+                    database.add_emotion(username, emotion, group)
                     msg = group_to_msg[group].format(emotion) + emotion_to_emoji[emotion]
                     send_message(msg, chat)
                     status[username] = emotion_to_group[emotion]
